@@ -1,1 +1,3 @@
-nbgrader quickstart course_id
+nbgrader quickstart course4DC10
+cd ./course4DC10
+jupyter notebook
