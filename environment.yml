@@ -6,4 +6,4 @@ dependencies:
   - matplotlib
   - pandas
   - simpy
-  - nbgrader #test
+  - nbgrader #required for grading of assignments
