@@ -1,2 +1,2 @@
 c = get_config()
-c.CourseDirectory.course_id = "course4DC10"
+c.CourseDirectory.root = "/home/course4DC10"
