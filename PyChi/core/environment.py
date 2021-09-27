@@ -96,7 +96,10 @@ class Environment(simpy.Environment):
 
         return self.process(select_process(self, communicators))
 
-
+    
+# ==========================================================
+# Selected function
+# ==========================================================
 def selected(communicator):
     if communicator is None:
         return False
@@ -106,3 +109,18 @@ def selected(communicator):
         raise TypeError(
             'The input is of the incorrect type.'
         )
+
+# ==========================================================
+# Process decorator
+# ==========================================================
+ def process(func):
+    def wrapper(*args, **kwargs):
+        """first argument of a process should be env"""
+        if not isinstance(args[0], Environment):
+            raise TypeError(
+                'The first argument of a process should always'
+                'be an Environment.'
+            )
+        env = args[0]
+        return env.process(func(*args, **kwargs))
+    return wrapper
