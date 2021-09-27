@@ -19,11 +19,6 @@ See: https://cstweb.wtb.tue.nl/chi/trunk-r9682/tutorial/channels.html#a-channel
 #==========================================================
 import random as rand
 import simpy
-from contextlib import contextmanager
-import traceback
-from simpy import AnyOf
-import inspect
-import functools
 
 # ==========================================================
 # Process decorator
