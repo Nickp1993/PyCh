@@ -99,6 +99,12 @@ class Channel:
     def remove_receiver(self, receiver):
         self.receivers.remove(receiver)
 
+    def send(self, entity=None):
+        return self.Sender(self.env, self, entity)
+
+    def receive(self):
+        return self.Receiver(self.env, self)    
+        
     # ==========================================================
     # Communicator
     # ==========================================================
@@ -220,7 +226,6 @@ class Channel:
                         return self.received_entity
                     except Exception as e:
                         pass
-#                         print(self, e)
             # else, if no sender is ready to send, schedule an event that this receiver is ready to receive
             else:
                 self.communicate = self.env.event()
@@ -242,12 +247,5 @@ class Channel:
                     self.channel.remove_receiver(self)
                     return None
 
-    ####################################################
-
-    def send(self, entity=None):
-        return self.Sender(self.env, self, entity)
-
-    def receive(self):
-        return self.Receiver(self.env, self)
 
 
