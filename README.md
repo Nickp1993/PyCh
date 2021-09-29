@@ -13,7 +13,7 @@ Pych requires the following packages: 'simpy', 'numpy', 'matplotlib.pyplot' and 
 For faster simulation, PyCh can be used with [PyPy](https://www.pypy.org/).
 
 ## Contents
-- 'PyCh' contains the source code of the package
+- 'src/PyCh' contains the source code of the package
 - 'notebooks' contains the jupyter notebooks used in the course
 - 'examples' contains some simulation examples in python 
 
