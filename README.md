@@ -4,6 +4,9 @@ PyCh is a Python package based on SimPy for discrete-event simulation.
 It is a tool developed for the course "Analysis of production systems" (4DC10).
 PyCh is a port of [Chi3](https://cstweb.wtb.tue.nl/chi/trunk-r9682/).
 
+## How to install
+...
+
 ## Python dependencies
 Pych requires the following packages: 'simpy', 'numpy', 'matplotlib.pyplot' and 'dataclasses'.
 
