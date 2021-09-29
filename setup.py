@@ -1,13 +1,21 @@
 from setuptools import setup
 
+VERSION = '0.1'
+
 setup(
     name='PyCh',
-    version='0.1',
+    version=VERSION,
     url='https://github.com/Nickp1993/4DC10',
     license='MIT',
     author='N. Paape',
     author_email='n.paape@tue.nl',
-    description='Simulation tool for 4DC10',
-    packages=['PyCh'],
-    install_requires=['simpy', 'dataclasses', 'numpy', 'matplotlib.pyplot' ]
+    description='Discrete-event simulation tool for 4DC10',
+    packages=find_packages("src"),
+    package_dir={"": "src"},
+    install_requires=[
+        'simpy',
+        'dataclasses',
+        'numpy',
+        'matplotlib.pyplot'
+    ]
 )
