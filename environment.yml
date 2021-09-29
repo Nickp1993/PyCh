@@ -3,6 +3,6 @@ channels:
   - conda-forge
 dependencies:
   - numpy
-  - matplotlib
+  - matplotlib.pyplot
   - simpy
   - dataclasses
