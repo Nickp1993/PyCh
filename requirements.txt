@@ -2,7 +2,7 @@
 numpy
 matplotlib.pyplot
 random
-dataclass
+dataclasses
 
 ###### Requirements with Version Specifiers ######`
 SimPy>=4.0.0
