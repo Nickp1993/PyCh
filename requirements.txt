@@ -1,0 +1,8 @@
+###### Requirements without Version Specifiers ######`
+numpy
+matplotlib.pyplot
+random
+dataclass
+
+###### Requirements with Version Specifiers ######`
+SimPy>=4.0.0
