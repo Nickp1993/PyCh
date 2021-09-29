@@ -1,9 +1,0 @@
-name: example-environment
-channels:
-  - conda-forge
-dependencies:
-  - numpy
-  - matplotlib
-  - pandas
-  - simpy
-  - nbgrader #required for grading of assignments
