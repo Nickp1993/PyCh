@@ -21,4 +21,4 @@ For faster simulation, PyCh can be used with [PyPy](https://www.pypy.org/).
 - 'examples' contains some simulation examples in python 
 
 ## Jupyter notebooks
-The jupyter notebooks used in this project can be tested in [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/Nickp1993/4DC10/HEAD)
+The jupyter notebooks used in this project can be tested in [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/Nickp1993/Pych/HEAD)
