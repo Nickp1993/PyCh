@@ -1,5 +1,4 @@
-from PyCh import Channel, process, selected, Environment
-from dataclasses import dataclass
+from PyCh import *
 import time
 
 # =================================
