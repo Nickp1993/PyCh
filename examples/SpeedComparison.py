@@ -1,4 +1,4 @@
-from Course_4DC10.simChi.core.channel_select import Channel, process, selected, Environment
+from PyCh import Channel, process, selected, Environment
 from dataclasses import dataclass
 import time
 

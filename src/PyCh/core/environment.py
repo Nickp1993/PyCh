@@ -17,7 +17,7 @@ Which executes EITHER a receive or a send.
 #==========================================================
 from simpy import AnyOf
 import simpy
-
+from PyCh import Channel
 # ==========================================================
 # Environment
 # ==========================================================
@@ -110,10 +110,11 @@ def selected(communicator):
             'The input is of the incorrect type.'
         )
 
+
 # ==========================================================
 # Process decorator
 # ==========================================================
- def process(func):
+def process(func):
     def wrapper(*args, **kwargs):
         """first argument of a process should be env"""
         if not isinstance(args[0], Environment):
