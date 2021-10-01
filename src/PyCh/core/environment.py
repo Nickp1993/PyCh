@@ -12,44 +12,87 @@ E.g. Environment.select( Channel.receive(), Channel.send(entity) )
 Which executes EITHER a receive or a send.
 
 """
-#==========================================================
+# ==========================================================
 # IMPORTS
-#==========================================================
-from simpy import AnyOf
+# ==========================================================
 import simpy
-from PyCh import Channel
+from simpy import AnyOf
+from numpy import random
+from PyCh import Communicator
+
+
 # ==========================================================
 # Environment
 # ==========================================================
 class Environment(simpy.Environment):
 
-    # Alternative for now (similar to Chi)
+    @property
     def time(self):
-        return self.now()
+        """ Returns the current simulation time
 
-    # Alternative for timeout (similar to Chi)
-    def delay(self, t):
-        return self.timeout(t)
+        This is an alternative to environment.now more similar to Chi
 
-    # ==========================================================
-    # Execute statement
-    # ==========================================================
+        :return: the current simulation time
+        """
+        return self.now
+
+    def delay(self, time):
+        """ Can be used to delay a process for a specific duration
+
+        This is an alternative to environment.timeout() more similar to Chi
+        can be used in a process using "yield environment.delay(time)"
+
+        :param time: the (simulation) time duration during which the process must wait
+        :return: a SimPy timeout event
+        """
+        return self.timeout(time)
+
     @staticmethod
     def execute(communicator):
+        """ Used to communicate over a channel using "yield environment.execute(communicator)"
+
+        This function can be used in a process to communicate over a channel.
+        It is used as following: "yield environment.execute(communicator)"
+        The process will continue after the yield statement when communication has occurred.
+
+        When used with a receiver it can also be used as "entity = yield environment.execute(receiver)"
+        to return the received entity. This can also be obtained later using receiver.entity
+
+        :param communicator: The communicator (sender/receiver)
+        """
         communicator.start_process()
 
-        return communicator.process
+        return communicator.communication
 
-    # ==========================================================
-    # Select statement
-    # ==========================================================
-    def select(self, *communicators):
+    def select(self, *communicators):  # TODO: documentation
+        """ The select function allows a process to wait for one of a list senders/receivers to communicate.
+
+        This is useful if it is unknown which communicator (sender/receiver) will first be ready.
+        The process will wait till one of the communicators has communicated (which is the selected communicator),
+        at which point communication by the other communicators is 'aborted'.
+        If multiple communicators are able to communicate at the same time, then only one is selected at random.
+
+        Can be used through either:
+
+        - "environment.select(*communicators)"
+        - or "environment.select(communicator1, communicator2, ...)"
+        - or a combination of both: "environment.select(*communicators123, communicator4, ...)"
+
+        The process will continue after the yield statement when communication has occurred.
+
+        If at least one of the communicators is a receiver, then:
+        "entity = yield environment.select(*communicators)"
+        returns the received entity if a receiver is selected.
+        If a sender is selected, the yield statement returns None
+
+        :param communicators: the communicators of which only one will be selected
+        """
+
         # Removes all communicators of NoneType (for which the guard is false)
         communicators = [c for c in communicators if c]
-
         # Check if the correct input is given, and if not, give an error.
         for c in communicators:
-            if not isinstance(c, Channel.Communicator):
+            if not isinstance(c, Communicator):
                 if isinstance(c, simpy.Process):
                     raise TypeError(
                         'A process was passed to the Select statement, '
@@ -64,7 +107,7 @@ class Environment(simpy.Environment):
                     'It is not allowed to mix events from different '
                     'environments'
                 )
-            if c.process_started:
+            if c.communication_started:
                 raise ValueError(
                     'The communicator has already started its process,'
                     'which is not allowed when used with the select statement.'
@@ -76,34 +119,42 @@ class Environment(simpy.Environment):
             other_communicators = [x for x in communicators if x != c]
             c.mutual_exclusive_communicators.extend(other_communicators)
 
-        def select_process(env,communicators):
+        def _select_process(env, communicators):
+            """ the selection process used by the select statement"""
+
             # start the send/receive processes for all communicators.
             # The order in which processes are started determines their prioritization
-            # In this case, the order is as given in the select function
+            # We reshuffle this order randomly to randomize prioritization
+            # Note: it would also be acceptable to keep the order of the list unchanged.
+            random.shuffle(communicators)
             for c in communicators:
                 c.start_process()
 
             # start waiting till one of the processes is selected
-            events = [c.process for c in communicators if c]
+            events = [c.communication for c in communicators]
             yield AnyOf(env, events)
-            value = 0
+
+            entity = None
             for c in communicators:
-                if not c.process.triggered:
-                    c.process.interrupt()
                 if c.selected:
-                    value = c.process.value
-            return value
+                    entity = c.communication.value
+            return entity
 
-        return self.process(select_process(self, communicators))
+        return self.process(_select_process(self, communicators))
 
-    
+
 # ==========================================================
 # Selected function
 # ==========================================================
 def selected(communicator):
+    """ Used to evaluate if a communicator has been selected.
+
+    :param communicator: the communicator (sender/receiver)
+    :return: a bool which denotes if the communicator has been selected or not
+    """
     if communicator is None:
         return False
-    elif isinstance(communicator, Channel.Communicator):
+    elif isinstance(communicator, Communicator):
         return communicator.selected
     else:
         raise TypeError(
@@ -115,13 +166,24 @@ def selected(communicator):
 # Process decorator
 # ==========================================================
 def process(func):
+    """ A decorator for process definitions.
+
+    The first argument of a process should always be its environment, e.g.:
+
+    @process
+    def Server(env,...):
+        ...
+
+    Look up python decorators for more information.
+    """
     def wrapper(*args, **kwargs):
-        """first argument of a process should be env"""
+        """"""
         if not isinstance(args[0], Environment):
             raise TypeError(
                 'The first argument of a process should always'
-                'be an Environment.'
+                'be its Environment.'
             )
         env = args[0]
         return env.process(func(*args, **kwargs))
+
     return wrapper
