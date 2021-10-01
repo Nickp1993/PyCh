@@ -30,7 +30,7 @@ def Buffer(env, a, b):
         if selected(sending):
             xs = xs[1:]
         if selected(receiving):
-            xs = xs + [receiving.received_entity]
+            xs = xs + [receiving.entity]
 
 
 # =================================
