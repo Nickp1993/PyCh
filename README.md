@@ -22,4 +22,5 @@ For faster simulation, PyCh can be used with [PyPy](https://www.pypy.org/).
 
 ## Jupyter notebooks
 The jupyter notebooks used in this project can be tested in [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/Nickp1993/PyCh/HEAD)
-Note, to test the notebooks in Mybinder.org: rename ".PyCh.py" to "PyCh.py" in the notebooks folder
+
+Note, to test the notebooks in Mybinder.org: rename "_PyCh.py" to "PyCh.py" in the notebooks folder
