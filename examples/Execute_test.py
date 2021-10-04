@@ -1,3 +1,7 @@
+'''
+This model is used to showcase the env.execute function.
+'''
+
 from PyCh import *
 import math
 

@@ -1,17 +1,15 @@
+'''
+This model showcases the complete simulation model of the end assignment
+'''
+
+
 from PyCh import *
 import math
-numpy.seterr(divide='ignore')
 import time
 
-# =================================
-# =================================
-# =================================
-
-start_time = time.time()
-
 
 # =================================
-# # Tote definition
+# Tote
 # =================================
 @dataclass
 class Tote:
@@ -21,7 +19,7 @@ class Tote:
 
 
 # =================================
-# # Global variables
+# Global variables
 # =================================
 lv = 3.0  # time to load/unload the vehicle
 dv = 0.5  # unit width clearance
@@ -35,12 +33,13 @@ bc = 1  # buffer capacity
 arrive = 70.0  # inter arrival time of requests
 Level = 9  # the number of tiers
 depth = 55  # the number of columns
-number_of_orders = 10000  # the number of orders to process
+number_of_orders = 100000  # the number of orders to process
 
 
 # =================================
-# # Generator definition
+# Generator
 # =================================
+@process
 def Generator(env, sending_channel, Tier):
     ### BEGIN SOLUTION
     ta_dist = lambda: random.exponential(arrive)
@@ -65,8 +64,9 @@ def Generator(env, sending_channel, Tier):
 
 
 # =================================
-# # Demand Buffer definition
+# Demand Buffer
 # =================================
+@process
 def Demand_Buffer(env, receiving_channel, sending_channel):
     xs = []  # list of totes
     while True:
@@ -84,8 +84,9 @@ def Demand_Buffer(env, receiving_channel, sending_channel):
 
 
 # =================================
-# # Vehicle definition
+# Vehicle
 # =================================
+@process
 def Vehicle(env, receiving_channel, sending_channel):
     ### BEGIN SOLUTION
     while True:
@@ -98,16 +99,6 @@ def Vehicle(env, receiving_channel, sending_channel):
         else:
             te_processing = 2*(distance / vmaxv + vmaxv / av + lv)
 
-        # TODO: eigenlijk zou je hier pas het item kunnen ophalen, maar zo wordt het niet gemodelleerd.
-        # De reden is natuurlijk dat je in dat geval geen idee hebt waar je naartoe moet rijden. Dit zou eigenlijk eerst verstuurd moeten worden.
-        #  x = yield receiving_channel.receive()
-        # TODO: Daarnaast, zou je pas kunnen unloaden als er een plekje vrij is in de buffer.
-        # Dus pas als de buffer ready is om te ontvangen, heb je nog lv seconden nodig om het ook echt in de buffer te plaatsen.
-        #  yield env.timeout(t_travel)
-        #  yield sending_channel.readyto_send()
-        #  yield env.timeout(lv)
-        #  yield sending_channel.send(x)
-            # te_processing = 2 * t_travel + 2 * lv
         yield env.timeout(te_processing)
 
         send = sending_channel.send(x)
@@ -116,8 +107,9 @@ def Vehicle(env, receiving_channel, sending_channel):
 
 
 # =================================
-# # Buffer definition
+# Buffer
 # =================================
+@process
 def Buffer(env, receiving_channels, sending_channel, call_lift_channel):
     xs = []
     n = [0] * Level
@@ -146,8 +138,9 @@ def Buffer(env, receiving_channels, sending_channel, call_lift_channel):
 
 
 # =================================
-# # Lift definition
+# Lift
 # =================================
+@process
 def Lift(env, receiving_channel, call_lift_channel, sending_channel):
     while True:
         ### BEGIN SOLUTION
@@ -176,8 +169,9 @@ def Lift(env, receiving_channel, call_lift_channel, sending_channel):
 
 
 # =================================
-# # Exit definition
+# Exit
 # =================================
+@process
 def Exit(env, receiving_channel):
     mphi = 0.0
     timer = time.time()
@@ -197,30 +191,38 @@ def Exit(env, receiving_channel):
 
 
 # =================================
-## GDV definition
+# GDV
 # =================================
 def GDV(env, sending_channel, Tier):
     a = Channel(env)  # for sending totes
     b = Channel(env)  # for sending totes
-    G = env.process(Generator(env, a, Tier))
-    D = env.process(Demand_Buffer(env, a, b))
-    V = env.process(Vehicle(env, b, sending_channel))
+    G = Generator(env, a, Tier)
+    D = Demand_Buffer(env, a, b)
+    V = Vehicle(env, b, sending_channel)
+
 
 # =================================
-# # Main
+# Model
 # =================================
-env = Environment()
-c = [Channel(env) for Tier in range(Level)]  # a channel for each tier, each sending totes
-d = Channel(env)  # for sending totes
-e = Channel(env)  # for calling the lift
-f = Channel(env)  # for sending totes
+def model():
+    start_time = time.time()
+    env = Environment()
+    c = [Channel(env) for Tier in range(Level)]  # a channel for each tier, each sending totes
+    d = Channel(env)  # for sending totes
+    e = Channel(env)  # for calling the lift
+    f = Channel(env)  # for sending totes
 
-GDVs = [GDV(env, c[Tier], Tier) for Tier in range(Level)]
-B = env.process(Buffer(env, c, d, e))
-L = env.process(Lift(env, d, e, f))
-E = env.process(Exit(env, f))
-env.run(until=E)
-print("simulation has ended")
+    GDVs = [GDV(env, c[Tier], Tier) for Tier in range(Level)]
+    B = Buffer(env, c, d, e)
+    L = Lift(env, d, e, f)
+    E = Exit(env, f)
+    env.run(until=E)
+    print("simulation has ended")
 
-print("--- %s seconds ---" % (time.time() - start_time))
-print("--- mphi is %s ---" % E.value)
+    print("--- %s seconds ---" % (time.time() - start_time))
+    print("--- mphi is %s ---" % E.value)
+
+# =================================
+# Main
+# =================================
+model()

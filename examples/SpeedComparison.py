@@ -1,8 +1,12 @@
+'''
+This model is used to execute a speed comparison between PyCh and Chi3
+'''
+
 from PyCh import *
 import time
 
 # =================================
-# # Tote definition
+# Tote
 # =================================
 @dataclass
 class Job:
@@ -11,16 +15,19 @@ class Job:
 
 
 # =================================
-# # Generator definition
+# Generator
 # =================================
-def Generatorz(env, a, ta):
+@process
+def Generator(env, a, ta):
     while True:
         yield env.execute( a.send(env.now) )
         yield env.timeout(ta)
 
+
 # =================================
-# # Buffer definition
+# Buffer
 # =================================
+@process
 def Buffer(env, a, b):
     xs = []  # list of jobs
     while True:
@@ -34,19 +41,20 @@ def Buffer(env, a, b):
 
 
 # =================================
-# # Machine definition
+# Machine
 # =================================
+@process
 def Server(env, a, b, ts):
     while True:
         x = yield env.execute( a.receive() )
         yield env.timeout(ts)
         yield env.select( b.send(x) )
 
-    # =================================
 
-
-# # Exit definition
 # =================================
+# Exit
+# =================================
+@process
 def Exit(env, a, N):
     timer = time.time()
     for i in range(N):
@@ -57,26 +65,32 @@ def Exit(env, a, N):
 
 
 # =================================
-## Model
+# Model
 # =================================
-start_time = time.time()
+def model():
+    start_time = time.time()
+
+    env = Environment()
+
+    ta = 1.0
+    ts = 1.0
+    N = 1000000
+
+    a = Channel(env)
+    b = Channel(env)
+    c = Channel(env)
+
+    G = Generator(env, a, ta)
+    B = Buffer(env, a, b)
+    M = Server(env, b, c, ts)
+    E = Exit(env, c, N)
+
+    env.run(until=E)
+
+    print("--- %s seconds ---" % (time.time() - start_time))
 
 
-env = Environment()
-
-ta = 1.0
-ts = 1.0
-N = 1000000
-
-a = Channel(env)
-b = Channel(env)
-c = Channel(env)
-
-G = env.process(Generatorz(env, a, ta))
-B = env.process(Buffer(env, a, b))
-M = env.process(Server(env, b, c, ts))
-E = env.process(Exit(env, c, N))
-
-env.run(until=E)
-
-print("--- %s seconds ---" % (time.time() - start_time))
+# =================================
+# Main
+# =================================
+model()
