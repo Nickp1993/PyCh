@@ -1,7 +1,7 @@
-###### Requirements without Version Specifiers ######`
+###### Requirements for PyCh ######`
 numpy
-matplotlib.pyplot
 dataclasses
-
-###### Requirements with Version Specifiers ######`
 SimPy>=4.0.0
+
+###### Requirements for learning tools  ######
+matplotlib.pyplot
