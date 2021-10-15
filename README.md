@@ -14,14 +14,14 @@ PyCh is a port of [Chi3](https://cstweb.wtb.tue.nl/chi/trunk-r9682/).
     - conda create --name pychEnv
         - press Y
     -	conda activate pychEnv
-     -	conda install git pip ipykernel
-        -	press Y 
-     -	python -m ipykernel install --user --name pychEnv --display-name "Python (pychEnv)"
-     -	pip install git+git://github.com/Nickp1993/Pych/
-     -	You can now close this window
+    -	conda install git pip ipykernel
+        - press Y 
+    -	python -m ipykernel install --user --name pychEnv --display-name "Python (pychEnv)"
+    -	pip install git+git://github.com/Nickp1993/Pych/
+    -	You can now close this window
 3.	Now you can start jupyter notebook (found in windows menu)
-  -	Navigate to the notebook you want to open and open it  
-  -	In the menubar, click kernel > change kernel >  Python (pychEnv)
+    -	Navigate to the notebook you want to open and open it  
+    -	In the menubar, click kernel > change kernel >  Python (pychEnv)
 
 
 ## Python dependencies
