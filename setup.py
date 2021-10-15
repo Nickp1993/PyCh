@@ -10,7 +10,7 @@ setup(
     author='N. Paape',
     author_email='n.paape@tue.nl',
     description='Discrete-event simulation tool for 4DC10',
-    packages=find_packages("src"),
+    packages=find_packages(include=['src', 'src.*']),
     package_dir={"": "src"},
     install_requires=[
         'simpy',
