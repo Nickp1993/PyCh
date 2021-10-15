@@ -16,6 +16,6 @@ setup(
         'simpy',
         'dataclasses',
         'numpy',
-        'matplotlib.pyplot'
+        'matplotlib'
     ]
 )
