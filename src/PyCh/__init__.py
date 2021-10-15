@@ -1,5 +1,5 @@
 #! usr/bin/python3
-ver = "0.1"
+ver = "0.2"
 print(f"PyCh version {ver} imported succesfully.\n ")
 from .core.channel import Channel, Communicator, Sender, Receiver
 from .core.environment import Environment, process, selected
