@@ -8,7 +8,21 @@ PyCh is a port of [Chi3](https://cstweb.wtb.tue.nl/chi/trunk-r9682/).
 **The project is currently set to public, to make testing with mybinder easier. However, in its current state, this project cannot be shared with students, as it contains the notebook files with the answers for the assignment. It is important that before the course starts a separate github project is created without any answers.**
 
 ## How to install
-...
+1.	Download and install the latest version of anaconda
+•	https://www.anaconda.com/products/individual 
+2.	Open an anaconda prompt (found in windows menu), and enter the following commands:
+•	conda create --name pychEnv
+•	press Y
+•	conda activate pychEnv
+•	conda install git pip ipykernel
+•	press Y 
+•	python -m ipykernel install --user --name pychEnv --display-name "Python (pychEnv)"
+•	pip install git+git://github.com/Nickp1993/Pych/
+•	You can now close this window
+3.	Now you can start jupyter notebook (found in windows menu)
+•	Navigate to the notebook you want to open and open it
+•	In the menubar, click kernel > change kernel >  Python (pychEnv)
+
 
 ## Python dependencies
 Pych requires the following packages: 'simpy', 'numpy', 'matplotlib.pyplot' and 'dataclasses'.
