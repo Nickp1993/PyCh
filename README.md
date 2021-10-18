@@ -4,7 +4,7 @@ PyCh is a Python package based on SimPy for discrete-event simulation.
 It is a tool developed for the course "Analysis of production systems" (4DC10).
 PyCh is a port of [Chi3](https://cstweb.wtb.tue.nl/chi/trunk-r9682/).
 
-# Important
+## Important
 **The project is currently set to public, to make testing with mybinder easier. However, in its current state, this project cannot be shared with students, as it contains the notebook files with the answers for the assignment. It is important that before the course starts a separate github project is created without any answers.**
 
 ## How to install
@@ -18,19 +18,23 @@ PyCh is a port of [Chi3](https://cstweb.wtb.tue.nl/chi/trunk-r9682/).
         - Enter `y` (for yes)
     -	`python -m ipykernel install --user --name pychEnv --display-name "Python (pychEnv)"`
     -	`pip install git+git://github.com/Nickp1993/Pych/`
-    -	You can now close this window
+    -	You must now close this window
 3.	You have finished installation, continue with the "How to use" below to start a notebook
 
 ## How to use
 1. Download the notebook files
     -   Click the green button above, and click download ZIP (or [click here](https://github.com/Nickp1993/PyCh/archive/refs/heads/main.zip))
-    -   Extract the notebook folder from the ZIP-file (we do not need the other files)
+    -   Extract the `\notebooks\` folder from the ZIP-file (e.g. to `C:\4DC10\notebooks`)
 2. Every time you want to start jupyter notebook: 
-    -   Open jupyter notebook (found in windows menu)
-    -	Wait till a local server has started, your browser should open it automatically
-    -   Inside Jupyter Notebook: Navigate to the notebook folder you just created and open a notebook
+    -   Open the anaconda prompt (found in windows menu)
+    -   In anaconda, set the path to that of your notebooks folder using `cd`, e.g. `cd C:\4DC10\notebooks`
+    -   Enter `jupyter notebook`
+    -	Wait till a local server has started, your browser should open it automatically, if not, [try clicking this links](http://127.0.0.1:8888/)
+    -   Open one of the notebooks (files with an `.ipynb` extension)
     -	In the menubar, click kernel > change kernel >  Python (pychEnv)
 3. You can now use this notebook!
+    -   You can now click run to execute the cells of the notebook one-by-one (jupyter notebooks work top-down)
+    -   [Click this link for information on how jupyter notebook works](https://realpython.com/jupyter-notebook-introduction/)
 
 ## Other information
 
