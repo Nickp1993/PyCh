@@ -18,7 +18,7 @@ PyCh is a port of [Chi3](https://cstweb.wtb.tue.nl/chi/trunk-r9682/).
         - Enter `y` (for yes)
     -	`python -m ipykernel install --user --name pychEnv --display-name "Python (pychEnv)"`
     -	`pip install git+git://github.com/Nickp1993/Pych/`
-    -	You must now close this window
+    -	Close this window
 3.	You have finished installation, continue with the "How to use" below to start a notebook
 
 ## How to use
