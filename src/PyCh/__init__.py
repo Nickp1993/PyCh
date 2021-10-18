@@ -19,7 +19,7 @@ numpy.seterr(divide='ignore')
 # import plot utilities
 # ===================================
 import matplotlib
-from matplotlib import pyplot
+from matplotlib import pyplot as plt
 matplotlib.use('nbagg')
 from .utilities.liveplot import LivePlot, LiveStepPlot
 
