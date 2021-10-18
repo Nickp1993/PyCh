@@ -24,10 +24,12 @@ PyCh is a port of [Chi3](https://cstweb.wtb.tue.nl/chi/trunk-r9682/).
 ## How to use
 1. Download the notebook files
     -   Click the green button above, and click download ZIP (or [click here](https://github.com/Nickp1993/PyCh/archive/refs/heads/main.zip))
-    -   Extract the `\notebooks\` folder from the ZIP-file (e.g. to `C:\4DC10\notebooks`)
+    -   Extract the `notebooks` folder from the ZIP-file.
+        - E.g. to `C:\4DC10\notebooks`
 2. Every time you want to start jupyter notebook: 
     -   Open the anaconda prompt (found in windows menu)
-    -   In anaconda, set the path to that of your notebooks folder by entering `cd X` with X the path of your notebooks folder , e.g. `cd C:\4DC10\notebooks`
+    -   In anaconda, set the path to that of your notebooks folder by entering `cd X` with X the path of your notebooks folder
+        - E.g. `cd C:\4DC10\notebooks`
     -   Enter `jupyter notebook`
     -	Wait till a local server has started, your browser should open it automatically, if not, [try clicking this links](http://127.0.0.1:8888/)
     -   Open one of the notebooks (files with an `.ipynb` extension)
