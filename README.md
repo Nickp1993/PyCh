@@ -19,13 +19,18 @@ PyCh is a port of [Chi3](https://cstweb.wtb.tue.nl/chi/trunk-r9682/).
     -	python -m ipykernel install --user --name pychEnv --display-name "Python (pychEnv)"
     -	pip install git+git://github.com/Nickp1993/Pych/
     -	You can now close this window
-3.	Now every time you want to start jupyter notebook: open jupyter notebook (found in windows menu)
-    -	Wait till a local server has started, your browser should open it automatically
-    -   Navigate to the notebook you want to open and open it  
-    -	In the menubar, click kernel > change kernel >  Python (pychEnv)
-    -	You can now use this notebook
+3.	You have finished installation, continue with the "How to use" below to start a notebook
 
 ## How to use
+1. Download the notebook files
+    -   Click the green button above, and click download ZIP (or [click here](https://github.com/Nickp1993/PyCh/archive/refs/heads/main.zip))
+    -   Extract the notebook folder from the ZIP-file (we do not need the other files)
+2. Every time you want to start jupyter notebook: 
+    -   Open jupyter notebook (found in windows menu)
+    -	Wait till a local server has started, your browser should open it automatically
+    -   Navigate to the notebook folder you just created and open it
+    -	In the menubar, click kernel > change kernel >  Python (pychEnv)
+3. You can now use this notebook!
 
 ## Other information
 
@@ -39,7 +44,7 @@ For faster simulation, PyCh can be used with [PyPy](https://www.pypy.org/).
 - 'notebooks' contains the jupyter notebooks used in the course
 - 'examples' contains some simulation examples in python 
 
-## Jupyter notebooks
+### Binder
 The jupyter notebooks used in this project can be tested in [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/Nickp1993/PyCh/HEAD)
 
 Note, to test the notebooks in Mybinder.org: rename "_PyCh.py" to "PyCh.py" in the notebooks folder
