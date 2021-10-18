@@ -28,7 +28,7 @@ PyCh is a port of [Chi3](https://cstweb.wtb.tue.nl/chi/trunk-r9682/).
 2. Every time you want to start jupyter notebook: 
     -   Open jupyter notebook (found in windows menu)
     -	Wait till a local server has started, your browser should open it automatically
-    -   Navigate to the notebook folder you just created and open it
+    -   Inside Jupyter Notebook: Navigate to the notebook folder you just created and open a notebook
     -	In the menubar, click kernel > change kernel >  Python (pychEnv)
 3. You can now use this notebook!
 
