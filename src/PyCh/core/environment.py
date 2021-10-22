@@ -178,12 +178,17 @@ def process(func):
     """
     def wrapper(*args, **kwargs):
         """"""
-        if not isinstance(args[0], Environment):
+        # first check if any of the arguments is an environment
+        env = None
+        for arg in args:
+            if isinstance(arg, Environment):
+                env = arg
+
+        if not env:
             raise TypeError(
                 'The first argument of a process should always'
                 'be its Environment.'
             )
-        env = args[0]
         return env.process(func(*args, **kwargs))
 
     return wrapper
