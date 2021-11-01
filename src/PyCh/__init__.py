@@ -3,7 +3,7 @@ ver = "0.2"
 # ===================================
 # import core
 # ===================================
-from .core.channel import Channel, Communicator, Sender, Receiver
+from .core.channel import Channel, CommunicationEvent, Sender, Receiver
 from .core.environment import Environment, process, selected
 
 # ===================================

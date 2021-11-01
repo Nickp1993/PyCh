@@ -18,7 +18,7 @@ Which executes EITHER a receive or a send.
 import simpy
 from simpy import AnyOf
 from numpy import random
-from PyCh import Communicator
+from PyCh import CommunicationEvent
 
 
 # ==========================================================
@@ -48,59 +48,59 @@ class Environment(simpy.Environment):
         return self.timeout(time)
 
     @staticmethod
-    def execute(communicator):
-        """ Used to communicate over a channel using "yield environment.execute(communicator)"
+    def execute(communication_event):
+        """ Used to communicate over a channel using "yield environment.execute(communication_event)"
 
         This function can be used in a process to communicate over a channel.
-        It is used as following: "yield environment.execute(communicator)"
+        It is used as following: "yield environment.execute(communication_event)"
         The process will continue after the yield statement when communication has occurred.
 
         When used with a receiver it can also be used as "entity = yield environment.execute(receiver)"
         to return the received entity. This can also be obtained later using receiver.entity
 
-        :param communicator: The communicator (sender/receiver)
+        :param communication_event: The communication_event (sender/receiver)
         """
-        communicator.start_process()
+        communication_event.start_process()
 
-        return communicator.communication
+        return communication_event.communication
 
-    def select(self, *communicators):  # TODO: documentation
+    def select(self, *communication_events):  # TODO: documentation
         """ The select function allows a process to wait for one of a list senders/receivers to communicate.
 
-        This is useful if it is unknown which communicator (sender/receiver) will first be ready.
-        The process will wait till one of the communicators has communicated (which is the selected communicator),
-        at which point communication by the other communicators is 'aborted'.
-        If multiple communicators are able to communicate at the same time, then only one is selected at random.
+        This is useful if it is unknown which communication_event (sender/receiver) will first be ready.
+        The process will wait till one of the communication_events has communicated (which is the selected
+        communication_event), at which point communication by the other communication_events is 'aborted'.
+        If multiple communication_events are able to communicate at the same time, then only one is selected at random.
 
         Can be used through either:
 
-        - "environment.select(*communicators)"
-        - or "environment.select(communicator1, communicator2, ...)"
-        - or a combination of both: "environment.select(*communicators123, communicator4, ...)"
+        - "environment.select(*communication_events)"
+        - or "environment.select(communication_event1, communication_event2, ...)"
+        - or a combination of both: "environment.select(*communication_events123, communication_event4, ...)"
 
         The process will continue after the yield statement when communication has occurred.
 
-        If at least one of the communicators is a receiver, then:
-        "entity = yield environment.select(*communicators)"
+        If at least one of the communication_events is a receiver, then:
+        "entity = yield environment.select(*communication_events)"
         returns the received entity if a receiver is selected.
         If a sender is selected, the yield statement returns None
 
-        :param communicators: the communicators of which only one will be selected
+        :param communication_events: the communication_events of which only one will be selected
         """
 
-        # Removes all communicators of NoneType (for which the guard is false)
-        communicators = [c for c in communicators if c]
+        # Removes all communication_events of NoneType (for which the guard is false)
+        communication_events = [c for c in communication_events if c]
         # Check if the correct input is given, and if not, give an error.
-        for c in communicators:
-            if not isinstance(c, Communicator):
+        for c in communication_events:
+            if not isinstance(c, CommunicationEvent):
                 if isinstance(c, simpy.Process):
                     raise TypeError(
                         'A process was passed to the Select statement, '
-                        'Try a communicator instead.'
+                        'Try a communication_event instead.'
                     )
                 else:
                     raise TypeError(
-                        'One of the communicators is of an incorrect type.'
+                        'One of the communication_events is of an incorrect type.'
                     )
             if self != c.env:
                 raise ValueError(
@@ -109,53 +109,53 @@ class Environment(simpy.Environment):
                 )
             if c.communication_started:
                 raise ValueError(
-                    'The communicator has already started its process,'
+                    'The communication_event has already started its process,'
                     'which is not allowed when used with the select statement.'
                 )
 
-        # Only one communicator is selected. Every communicator must know who the other communicators are.
-        # The reason is that the communicators must communicate to each other
-        for c in communicators:
-            other_communicators = [x for x in communicators if x != c]
-            c.mutual_exclusive_communicators.extend(other_communicators)
+        # Only one communication_event is selected. Every communication_event must know who the other communication_events are.
+        # The reason is that the communication_events must communicate to each other
+        for c in communication_events:
+            other_communication_events = [x for x in communication_events if x != c]
+            c.mutual_exclusive_communication_events.extend(other_communication_events)
 
-        def _select_process(env, communicators):
+        def _select_process(env, communication_events):
             """ the selection process used by the select statement"""
 
-            # start the send/receive processes for all communicators.
+            # start the send/receive processes for all communication_events.
             # The order in which processes are started determines their prioritization
             # We reshuffle this order randomly to randomize prioritization
             # Note: it would also be acceptable to keep the order of the list unchanged.
-            random.shuffle(communicators)
-            for c in communicators:
+            random.shuffle(communication_events)
+            for c in communication_events:
                 c.start_process()
 
             # start waiting till one of the processes is selected
-            events = [c.communication for c in communicators]
+            events = [c.communication for c in communication_events]
             yield AnyOf(env, events)
 
             entity = None
-            for c in communicators:
+            for c in communication_events:
                 if c.selected:
                     entity = c.communication.value
             return entity
 
-        return self.process(_select_process(self, communicators))
+        return self.process(_select_process(self, communication_events))
 
 
 # ==========================================================
 # Selected function
 # ==========================================================
-def selected(communicator):
-    """ Used to evaluate if a communicator has been selected.
+def selected(communication_event):
+    """ Used to evaluate if a communication_event has been selected.
 
-    :param communicator: the communicator (sender/receiver)
-    :return: a bool which denotes if the communicator has been selected or not
+    :param communication_event: the communication_event (sender/receiver)
+    :return: a bool which denotes if the communication_event has been selected or not
     """
-    if communicator is None:
+    if communication_event is None:
         return False
-    elif isinstance(communicator, Communicator):
-        return communicator.selected
+    elif isinstance(communication_event, CommunicationEvent):
+        return communication_event.selected
     else:
         raise TypeError(
             'The input is of the incorrect type.'

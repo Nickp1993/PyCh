@@ -109,7 +109,7 @@ class Channel:
         Can be used in a process to send entities if followed by either:
         "yield environment.execute(Sender)"
         or
-        "yield environment.select(Sender, *other_communicators)"
+        "yield environment.select(Sender, *other_communication_events)"
         See Environment.execute() or Environment.select() for more information.
 
         :param entity: the entity which is sent over this channel
@@ -123,7 +123,7 @@ class Channel:
         Can be used in a process to send entities if followed by either:
         "yield environment.execute(Receiver)"
         or
-        "yield environment.select(Receiver, *other_communicators)"
+        "yield environment.select(Receiver, *other_communication_events)"
         See Environment.execute() or Environment.select() for more information.
 
         :return: Receiver
@@ -138,7 +138,7 @@ class Channel:
         a random sender and receiver are chosen.
         Both sender and receiver are then unregistered.
         If either sender or receiver were executed using select statement, then all other
-        communicators in the select statement are also unregistered.
+        communication_events in the select statement are also unregistered.
         Finally, communication occurs between the sender and receiver.
 
         """
@@ -147,11 +147,11 @@ class Channel:
             receiver = self.get_random_receiver()
 
             # TODO: currently, entities cannot be sent and received by the same process. should this be allowed?
-            if receiver in sender.mutual_exclusive_communicators or sender in receiver.mutual_exclusive_communicators:
+            if receiver in sender.mutual_exclusive_communication_events or sender in receiver.mutual_exclusive_communication_events:
                 raise ValueError("a process cannot send to itself")
 
-            sender.unregister_unselected_communicators()
-            receiver.unregister_unselected_communicators()
+            sender.unregister_unselected_communication_events()
+            receiver.unregister_unselected_communication_events()
 
             self.unregister_sender(sender)
             self.unregister_receiver(receiver)
@@ -160,47 +160,45 @@ class Channel:
             receiver.entity = sender.entity
             receiver.communication.succeed(value=receiver.entity)
 
-    # ==========================================================
-    # Communicator
-    # ==========================================================
-
-
-class Communicator:
-    """ A communicator communications across a channel, it is either a Sender or Receiver.
+# ==========================================================
+# CommunicationEvent
+# ==========================================================
+class CommunicationEvent:
+    """ A communication_event communications across a channel, it is either a Sender or Receiver.
 
     """
 
     def __init__(self, env, channel):
         """
 
-        :param env: the environment in which this communicator operates
-        :param channel: the channel over which this communicator communicates
+        :param env: the environment in which this communication_event operates
+        :param channel: the channel over which this communication_event communicates
         """
-        self.env = env  # The environment of this communicator
-        self.channel = channel  # The channel of this communicator
+        self.env = env  # The environment of this communication_event
+        self.channel = channel  # The channel of this communication_event
         self.communication = self.env.event()  # An event which is triggered when communication begins
-        self.mutual_exclusive_communicators = []  # When this communicator is 'selected', these communicators are
+        self.mutual_exclusive_communication_events = []  # When this communication_event is 'selected', these communication_events are
         # unregistered from their channels
-        self.communication_started = False  # is true if this communicator has started communicating
+        self.communication_started = False  # is true if this communication_event has started communicating
 
-        self.register()  # registers the communicator to its channel
+        self.register()  # registers the communication_event to its channel
 
     def execute(self):
-        """ Executes the communication of the communicator and returns its communication event
+        """ Executes the communication of the communication_event and returns its communication event
 
-        Can be used as following: "yield communicator.execute()"
-        Which is identical to "yield environment.execute(communicator)"
+        Can be used as following: "yield communication_event.execute()"
+        Which is identical to "yield environment.execute(communication_event)"
 
-        :return: the communication event of this communicator
+        :return: the communication event of this communication_event
         """
         self.start_process()
         return self.communication
 
     # The function used to start the process
     def start_process(self):
-        """ Starts the communication of the communicator, and asks its channel to check if communication is possible
+        """ Starts the communication of the communication_event, and asks its channel to check if communication is possible
 
-        :return: the communication event of this communicator
+        :return: the communication event of this communication_event
         :rtype: Event
         """
         self.communication_started = True
@@ -209,9 +207,9 @@ class Communicator:
 
     @property
     def selected(self) -> bool:
-        """ If a select statement is used, this property shows if this communicator was selected or not
+        """ If a select statement is used, this property shows if this communication_event was selected or not
 
-        :return: a boolean which is true if the communicator was selected
+        :return: a boolean which is true if the communication_event was selected
         :rtype: bool
         """
         try:
@@ -219,18 +217,18 @@ class Communicator:
         except AttributeError:
             print("Oops! The process has not yet started.")
 
-    def unregister_unselected_communicators(self):
-        """ If this communicator was selected, this function is used to unregister the not selected communicators from
+    def unregister_unselected_communication_events(self):
+        """ If this communication_event was selected, this function is used to unregister the not selected communication_events from
         their respective channels."""
-        for c in self.mutual_exclusive_communicators:
+        for c in self.mutual_exclusive_communication_events:
             c.unregister()
 
 
 # ==========================================================
 # Sender
 # ==========================================================
-class Sender(Communicator):
-    """ A sender is a type of communicator which sends"""
+class Sender(CommunicationEvent):
+    """ A sender is a type of communication_event which sends"""
     def __init__(self, env, channel, entity=None):
         super().__init__(env, channel)
         self.entity = entity  # the entity which is sent
@@ -247,8 +245,8 @@ class Sender(Communicator):
 # ==========================================================
 # Receiver
 # ==========================================================
-class Receiver(Communicator):
-    """ A receiver is a type of communicator which receives"""
+class Receiver(CommunicationEvent):
+    """ A receiver is a type of communication_event which receives"""
     def __init__(self, env, channel):
         super().__init__(env, channel)
 
