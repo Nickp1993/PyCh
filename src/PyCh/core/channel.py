@@ -19,7 +19,6 @@ See: https://cstweb.wtb.tue.nl/chi/trunk-r9682/tutorial/channels.html#a-channel
 # ==========================================================
 from numpy import random
 
-
 # ==========================================================
 # Channel
 # ==========================================================
@@ -146,7 +145,7 @@ class Channel:
             sender = self.get_random_sender()
             receiver = self.get_random_receiver()
 
-            # TODO: currently, entities cannot be sent and received by the same process. should this be allowed?
+            # TODO: currently, entities cannot be sent and received by the same process. Should this be allowed?
             if receiver in sender.mutual_exclusive_communication_events or sender in receiver.mutual_exclusive_communication_events:
                 raise ValueError("a process cannot send to itself")
 
@@ -156,9 +155,27 @@ class Channel:
             self.unregister_sender(sender)
             self.unregister_receiver(receiver)
 
-            sender.communication.succeed()
-            receiver.entity = sender.entity
-            receiver.communication.succeed(value=receiver.entity)
+            self.env.process(self.execute_communication(sender, receiver))
+
+    def execute_communication(self, sender, receiver):
+        # Sender succeeds
+        sender.communication.succeed()
+
+        # We need to delay the receiver, so we use a dummy process
+        # If we do not do this, it is possible the receiver receives, before the sender sends!
+        delay_receiver = self.env.process(self.dummy_process())
+        yield delay_receiver
+
+        # Receiver succeeds
+        receiver.entity = sender.entity
+        receiver.communication.succeed(value=receiver.entity)
+
+    def dummy_process(self):
+        """
+        This dummy process is used to force the order in which communication is handled
+        (Basically, to force that a sender continues before a receiver)
+        """
+        yield self.env.timeout(0.0)
 
 # ==========================================================
 # CommunicationEvent
@@ -249,6 +266,21 @@ class Receiver(CommunicationEvent):
     """ A receiver is a type of communication_event which receives"""
     def __init__(self, env, channel):
         super().__init__(env, channel)
+
+        self.waiting2receive = self.env.event()
+
+    def end_process(self, received_entity):
+        delay_till_after_sender = self.env.process(self.dummy_process())
+        yield delay_till_after_sender
+        self.entity = received_entity
+        self.communication.succeed(value=received_entity)
+
+    def dummy_process(self):
+        """
+        This dummy process is used to force the order in which communication is handled
+        (Basically, to force that a sender continues before a receiver)
+        """
+        yield self.env.timeout(0.0)
 
     def register(self):
         """ Register this receiver at its channel"""

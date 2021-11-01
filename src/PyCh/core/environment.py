@@ -127,6 +127,7 @@ class Environment(simpy.Environment):
             # We reshuffle this order randomly to randomize prioritization
             # Note: it would also be acceptable to keep the order of the list unchanged.
             random.shuffle(communication_events)
+
             for c in communication_events:
                 c.start_process()
 
