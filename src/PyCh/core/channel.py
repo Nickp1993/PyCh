@@ -253,7 +253,6 @@ class Sender(CommunicationEvent):
         receiver = yield self.communicate  # The sender receives the receiver it has to communicate with.
         receiver.communicate.succeed(value=self.entity)
 
-
     def register(self):
         """ Register this sender at its channel"""
         self.channel.register_sender(self)
