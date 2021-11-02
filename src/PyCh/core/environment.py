@@ -132,8 +132,8 @@ class Environment(simpy.Environment):
                 c.start_process()
 
             # start waiting till one of the processes is selected
-            events = [c.process for c in communication_events]
-            yield AnyOf(env, events)
+            processes = [c.process for c in communication_events]
+            yield AnyOf(env, processes)
 
             entity = None
             for c in communication_events:
