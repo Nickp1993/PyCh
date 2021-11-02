@@ -155,9 +155,27 @@ class Channel:
             self.unregister_sender(sender)
             self.unregister_receiver(receiver)
 
-            # Start the actual execution of the communication process
-            sender.communicate.succeed(receiver)
+            self.env.process(self.execute_communication(sender, receiver))
 
+    def execute_communication(self, sender, receiver):
+        # Sender succeeds
+        sender.communication.succeed()
+
+        # We need to delay the receiver, so we use a dummy process
+        # If we do not do this, it is possible the receiver receives, before the sender sends!
+        delay_receiver = self.env.process(self.dummy_process())
+        yield delay_receiver
+
+        # Receiver succeeds
+        receiver.entity = sender.entity
+        receiver.communication.succeed(value=receiver.entity)
+
+    def dummy_process(self):
+        """
+        This dummy process is used to force the order in which communication is handled
+        (Basically, to force that a sender continues before a receiver)
+        """
+        yield self.env.timeout(0.0)
 
 # ==========================================================
 # CommunicationEvent
@@ -175,8 +193,7 @@ class CommunicationEvent:
         """
         self.env = env  # The environment of this communication_event
         self.channel = channel  # The channel of this communication_event
-        self.communicate = self.env.event()  # An event which is triggered when the entity has been transferred
-        self.process = [] # The communication process of this Sender/Receiver
+        self.communication = self.env.event()  # An event which is triggered when communication begins
         self.mutual_exclusive_communication_events = []  # When this communication_event is 'selected', these communication_events are
         # unregistered from their channels
         self.communication_started = False  # is true if this communication_event has started communicating
@@ -191,7 +208,8 @@ class CommunicationEvent:
 
         :return: the communication event of this communication_event
         """
-        return self.start_process()
+        self.start_process()
+        return self.communication
 
     # The function used to start the process
     def start_process(self):
@@ -200,11 +218,9 @@ class CommunicationEvent:
         :return: the communication event of this communication_event
         :rtype: Event
         """
-        self.process = self.env.process(self.communication_process())
         self.communication_started = True
         self.channel.try_communication()
-        return self.process
-
+        return self.communication
 
     @property
     def selected(self) -> bool:
@@ -214,7 +230,7 @@ class CommunicationEvent:
         :rtype: bool
         """
         try:
-            return self.communicate.triggered
+            return self.communication.triggered
         except AttributeError:
             print("Oops! The process has not yet started.")
 
@@ -234,10 +250,6 @@ class Sender(CommunicationEvent):
         super().__init__(env, channel)
         self.entity = entity  # the entity which is sent
 
-    def communication_process(self):
-        receiver = yield self.communicate  # The sender receives the receiver it has to communicate with.
-        receiver.communicate.succeed(value=self.entity)
-
     def register(self):
         """ Register this sender at its channel"""
         self.channel.register_sender(self)
@@ -254,11 +266,6 @@ class Receiver(CommunicationEvent):
     """ A receiver is a type of communication_event which receives"""
     def __init__(self, env, channel):
         super().__init__(env, channel)
-
-    def communication_process(self):
-        entity = yield self.communicate
-        self.entity = entity
-        return entity
 
     def register(self):
         """ Register this receiver at its channel"""
