@@ -156,23 +156,8 @@ class Channel:
             self.unregister_receiver(receiver)
 
             # Start the actual execution of the communication process
-            # self.env.process(self.execute_communication(sender, receiver))
-
-            # nieuwe poging
             sender.communicate.succeed(receiver)
 
-
-    def execute_communication(self, sender, receiver):
-        # Sender succeeds
-        sender.communicate.succeed()
-
-        # We need to delay the receiver, so we use a dummy process
-        # If we do not do this, it is possible the receiver receives, before the sender sends!
-        yield sender.process
-
-        # Receiver succeeds
-        receiver.entity = sender.entity
-        receiver.communicate.succeed(value=receiver.entity)
 
 # ==========================================================
 # CommunicationEvent
