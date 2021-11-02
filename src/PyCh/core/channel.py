@@ -163,8 +163,7 @@ class Channel:
 
         # We need to delay the receiver, so we use a dummy process
         # If we do not do this, it is possible the receiver receives, before the sender sends!
-        delay_receiver = self.env.process(self.dummy_process())
-        yield delay_receiver
+        yield sender.communicationP
 
         # Receiver succeeds
         receiver.entity = sender.entity
@@ -194,6 +193,7 @@ class CommunicationEvent:
         self.env = env  # The environment of this communication_event
         self.channel = channel  # The channel of this communication_event
         self.communication = self.env.event()  # An event which is triggered when communication begins
+        self.communicationP = []
         self.mutual_exclusive_communication_events = []  # When this communication_event is 'selected', these communication_events are
         # unregistered from their channels
         self.communication_started = False  # is true if this communication_event has started communicating
@@ -208,8 +208,7 @@ class CommunicationEvent:
 
         :return: the communication event of this communication_event
         """
-        self.start_process()
-        return self.communication
+        return self.start_process()
 
     # The function used to start the process
     def start_process(self):
@@ -218,9 +217,11 @@ class CommunicationEvent:
         :return: the communication event of this communication_event
         :rtype: Event
         """
+        self.communicationP = self.env.process(self.communication_process())
         self.communication_started = True
         self.channel.try_communication()
-        return self.communication
+        return self.communicationP
+
 
     @property
     def selected(self) -> bool:
@@ -250,6 +251,11 @@ class Sender(CommunicationEvent):
         super().__init__(env, channel)
         self.entity = entity  # the entity which is sent
 
+    def communication_process(self):
+        yield self.env.timeout(0.0)
+        yield self.communication
+
+
     def register(self):
         """ Register this sender at its channel"""
         self.channel.register_sender(self)
@@ -267,20 +273,10 @@ class Receiver(CommunicationEvent):
     def __init__(self, env, channel):
         super().__init__(env, channel)
 
-        self.waiting2receive = self.env.event()
-
-    def end_process(self, received_entity):
-        delay_till_after_sender = self.env.process(self.dummy_process())
-        yield delay_till_after_sender
-        self.entity = received_entity
-        self.communication.succeed(value=received_entity)
-
-    def dummy_process(self):
-        """
-        This dummy process is used to force the order in which communication is handled
-        (Basically, to force that a sender continues before a receiver)
-        """
+    def communication_process(self):
         yield self.env.timeout(0.0)
+        entity = yield self.communication
+        return entity
 
     def register(self):
         """ Register this receiver at its channel"""

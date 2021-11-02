@@ -62,7 +62,7 @@ class Environment(simpy.Environment):
         """
         communication_event.start_process()
 
-        return communication_event.communication
+        return communication_event.communicationP
 
     def select(self, *communication_events):  # TODO: documentation
         """ The select function allows a process to wait for one of a list senders/receivers to communicate.
@@ -132,13 +132,13 @@ class Environment(simpy.Environment):
                 c.start_process()
 
             # start waiting till one of the processes is selected
-            events = [c.communication for c in communication_events]
+            events = [c.communicationP for c in communication_events]
             yield AnyOf(env, events)
 
             entity = None
             for c in communication_events:
                 if c.selected:
-                    entity = c.communication.value
+                    entity = c.communicationP.value
             return entity
 
         return self.process(_select_process(self, communication_events))
