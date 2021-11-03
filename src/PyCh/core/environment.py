@@ -162,6 +162,23 @@ def selected(communication_event):
             'The input is of the incorrect type.'
         )
 
+# ==========================================================
+# Selected function
+# ==========================================================
+def ready(event):
+    """ Used to evaluate if an event has finished
+
+    :param event: the event
+    :return: a bool which denotes if the event has finished
+    """
+    if event is None:
+        return False
+    elif isinstance(event, simpy.Event):
+        return event.processed
+    else:
+        raise TypeError(
+            'The input is of the incorrect type.'
+        )
 
 # ==========================================================
 # Process decorator
