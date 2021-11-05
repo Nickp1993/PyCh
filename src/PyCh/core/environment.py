@@ -20,7 +20,6 @@ from simpy import AnyOf
 from numpy import random
 from PyCh import CommunicationEvent
 
-
 # ==========================================================
 # Environment
 # ==========================================================
@@ -163,7 +162,7 @@ def selected(communication_event):
         )
 
 # ==========================================================
-# Selected function
+# Ready function
 # ==========================================================
 def ready(event):
     """ Used to evaluate if an event has finished
@@ -175,6 +174,24 @@ def ready(event):
         return False
     elif isinstance(event, simpy.Event):
         return event.processed
+    else:
+        raise TypeError(
+            'The input is of the incorrect type.'
+        )
+
+# ==========================================================
+# Ready function
+# ==========================================================
+def output(event):
+    """ Used to evaluate if an event has finished
+
+    :param event: the event
+    :return: a bool which denotes if the event has finished
+    """
+    if event is None:
+        return False
+    elif isinstance(event, simpy.Event):
+        return event.value
     else:
         raise TypeError(
             'The input is of the incorrect type.'
