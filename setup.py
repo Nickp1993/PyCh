@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-VERSION = '0.5'
+VERSION = '1.0'
 
 setup(
     name='PyCh',
