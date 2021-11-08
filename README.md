@@ -23,7 +23,7 @@ PyCh is a port of [Chi3](https://cstweb.wtb.tue.nl/chi/trunk-r9682/).
 
 ## How to use
 1. Download the notebook files
-    -   Click the green button above, and click download ZIP (or [click here](https://github.com/Nickp1993/PyCh/archive/refs/heads/main.zip))
+    -   Click the green button above, and click download ZIP (or [click here](https://github.com/Nickp1993/4DC10-student/archive/refs/heads/main.zip))
     -   Extract the `notebooks` folder from the ZIP-file.
         - E.g. to `C:\4DC10\notebooks`
 2. Every time you want to start jupyter notebook: 
