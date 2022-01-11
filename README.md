@@ -17,7 +17,7 @@ PyCh is a port of [Chi3](https://cstweb.wtb.tue.nl/chi/trunk-r9682/).
     -	`conda install git pip ipykernel`
         - Enter `y` (for yes)
     -	`python -m ipykernel install --user --name pychEnv --display-name "Python (pychEnv)"`
-    -	`pip install git+git://github.com/Nickp1993/Pych/`
+    -	`pip install git+https://github.com/Nickp1993/Pych/`
     -	Close this window (do not continue with the "how to use" without closing!)
 3.	You have finished installation, continue with the "How to use" below to start a notebook
 
