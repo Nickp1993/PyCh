@@ -22,7 +22,7 @@ import matplotlib
 from matplotlib import pyplot as plt
 matplotlib.use('nbagg')
 from .utilities.liveplot import LivePlot, LiveStepPlot
-from .utilies.draw_lot_time_diagram import draw_lot_time_diagram
+from .utilities.draw_lot_time_diagram import draw_lot_time_diagram
 
 # Finished
 print(f"PyCh version {ver} imported succesfully.\n ")
