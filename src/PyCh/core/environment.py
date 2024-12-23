@@ -133,7 +133,7 @@ class Environment(simpy.Environment):
 
             # start waiting till one of the processes is selected
             events = [c.communication for c in communication_events]
-            events.append(other_events)
+            events.extend(other_events)
             yield AnyOf(env, events)
 
             entity = None
@@ -143,6 +143,9 @@ class Environment(simpy.Environment):
             for e in other_events:
                 if e.processed:
                     entity = e.value
+                    # Other event was selected, so we need to manually unregister all communication events.
+                    for c in communication_events:
+                        c.unregister()
             return entity
 
         return self.process(_select_process(self, communication_events, other_events))
