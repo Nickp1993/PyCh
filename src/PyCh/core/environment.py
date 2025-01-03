@@ -63,7 +63,7 @@ class Environment(simpy.Environment):
 
         return communication_event.communication
 
-    def select(self, *communication_events):  # TODO: documentation
+    def select(self, *events):  # TODO: documentation
         """ The select function allows a process to wait for one of a list senders/receivers to communicate.
 
         This is useful if it is unknown which communication_event (sender/receiver) will first be ready.
@@ -87,29 +87,30 @@ class Environment(simpy.Environment):
         :param communication_events: the communication_events of which only one will be selected
         """
 
-        # Removes all communication_events of NoneType (for which the guard is false)
-        communication_events = [c for c in communication_events if c]
+        # Removes all events of NoneType (for which the guard is false)
+        events = [c for c in events if c]
         # Check if the correct input is given, and if not, give an error.
-        for c in communication_events:
-            if not isinstance(c, CommunicationEvent):
-                if isinstance(c, simpy.Process):
-                    raise TypeError(
-                        'A process was passed to the Select statement, '
-                        'Try a communication_event instead.'
+        communication_events = []
+        other_events = []
+        for c in events:
+            if isinstance(c, CommunicationEvent):
+                communication_events.append(c)
+                if c.communication_started:
+                    raise ValueError(
+                        'The communication_event has already started its process,'
+                        'which is not allowed when used with the select statement.'
                     )
+            if not isinstance(c, CommunicationEvent):
+                if isinstance(c, simpy.Event):
+                    other_events.append(c)
                 else:
                     raise TypeError(
-                        'One of the communication_events is of an incorrect type.'
+                        'One of the events is of an incorrect type.'
                     )
             if self != c.env:
                 raise ValueError(
                     'It is not allowed to mix events from different '
                     'environments'
-                )
-            if c.communication_started:
-                raise ValueError(
-                    'The communication_event has already started its process,'
-                    'which is not allowed when used with the select statement.'
                 )
 
         # Only one communication_event is selected. Every communication_event must know who the other communication_events are.
@@ -118,7 +119,7 @@ class Environment(simpy.Environment):
             other_communication_events = [x for x in communication_events if x != c]
             c.mutual_exclusive_communication_events.extend(other_communication_events)
 
-        def _select_process(env, communication_events):
+        def _select_process(env, communication_events, other_events):
             """ the selection process used by the select statement"""
 
             # start the send/receive processes for all communication_events.
@@ -132,15 +133,22 @@ class Environment(simpy.Environment):
 
             # start waiting till one of the processes is selected
             events = [c.communication for c in communication_events]
+            events.extend(other_events)
             yield AnyOf(env, events)
 
             entity = None
             for c in communication_events:
                 if c.selected:
                     entity = c.communication.value
+            for e in other_events:
+                if e.processed:
+                    entity = e.value
+                    # Other event was selected, so we need to manually unregister all communication events.
+                    for c in communication_events:
+                        c.unregister()
             return entity
 
-        return self.process(_select_process(self, communication_events))
+        return self.process(_select_process(self, communication_events, other_events))
 
 
 # ==========================================================

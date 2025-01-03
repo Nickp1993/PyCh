@@ -1,5 +1,5 @@
 #! usr/bin/python3
-ver = "2.1"
+ver = "2.2"
 # ===================================
 # import core
 # ===================================
@@ -25,4 +25,4 @@ from .utilities.liveplot import LivePlot, LiveStepPlot
 from .utilities.draw_lot_time_diagram import draw_lot_time_diagram
 
 # Finished
-print(f"PyCh version {ver} imported succesfully.\n ")
+print(f"PyCh version {ver} imported successfully.\n ")

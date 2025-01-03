@@ -1,4 +1,4 @@
-name: pychEnv
+name: pychEnvDev
 channels:
   - conda-forge
 dependencies:
